@@ -6,7 +6,7 @@ This API employs a highly resilient **Cascading Fallback Scraper Engine** built 
 
 ## Key Features
 
-- **High-Speed Caching**: Uses Redis to store recent queries and serve repeated requests in milliseconds, skipping the resource-intensive scraping process.
+- **High-Speed Caching (Redis)**: Uses unique **MD5 hash keys** with a 24-hour TTL to store recent queries, cutting complex Playwright scraping latency (**5–15 seconds**) down to **<50 milliseconds**.
 - **Long-term Persistence**: Persists historical scraped data in MongoDB for long-term lookups.
 - **Cascading Fallback Scraper Engine**: Dynamically degrades from a Primary scraper (Registerkaro) to Secondary (Piceapp with fuzzy matching) and Tertiary (Credlix) scrapers if a target fails or blocks the request.
 - **Concurrency Management**: Uses Redis distributed locks (`setnx`) to prevent launching multiple headless browser instances for identical concurrent requests.
@@ -23,6 +23,8 @@ This API employs a highly resilient **Cascading Fallback Scraper Engine** built 
 - **Fuzzy Matching**: RapidFuzz
 
 ## System Workflow
+
+![System Execution Workflow](docs/workflow_diagram.png)
 
 1. **API Request**: The user sends a search query to the FastAPI endpoint (`/api/v1/search`).
 2. **Cache Check (Redis)**: Checks Redis for a cached response. If found, returns instantly.
@@ -41,7 +43,7 @@ This API employs a highly resilient **Cascading Fallback Scraper Engine** built 
 
 1. **Clone the repository** (or navigate to the project directory):
    ```bash
-   cd "HSN scraper service"
+   cd Web_Scraper
    ```
 
 2. **Create and activate a virtual environment** (optional but recommended):
@@ -154,3 +156,6 @@ The API uses custom standardized HTTP exceptions:
 - **404 Not Found** (`NotFoundException`): Valid queries yield no results across databases and active scrapers.
 - **409 Conflict** (`ConflictException`): Triggered gracefully to manage duplicate concurrent requests relying on cache polling.
 - **500 Internal Server Error** (`InternalServerException`): When the scraper factory is exhausted (all fallback nodes fail) or critical infrastructure (Redis/Mongo) disconnects.
+
+## ⚖️ Portfolio & Architecture Disclaimer
+*This repository contains an architectural portfolio demonstration of an asynchronous web scraping microservice developed during a technical internship. Certain proprietary production endpoints, database credentials, and production CSS locators have been sanitized or adapted for educational and portfolio presentation purposes.*
