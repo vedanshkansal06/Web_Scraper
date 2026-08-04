@@ -89,7 +89,7 @@ class ScraperService:
         if mongo_col is not None:
             mongo_docs = await mongo_col.find({"description": {"$regex": query, "$options": "i"}}).to_list(length = 100)
             if mongo_docs:
-                logger.info(f"Found {query} in MongoDB, pushing yo Redis")
+                logger.info(f"Found {query} in MongoDB, pushing to Redis")
                 for doc in mongo_docs:
                     doc.pop('_id', None)
                     result_item = ScrapingResultItem(**doc)
